@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <iomanip>
 #include <chrono>
+#include <immintrin.h>
+
 using namespace std;
 
 /*
