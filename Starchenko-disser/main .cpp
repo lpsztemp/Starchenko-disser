@@ -18,6 +18,10 @@ uint64_t parity_bit(uint64_t input)
 	return result;
 }
 
+int parity_bit_vector(const uint8_t* V, unsigned N)
+{
+}
+
 //bitsize(input) < bitsize(poly) - 1
 uint64_t crc_1(uint64_t input, uint64_t poly)
 {
