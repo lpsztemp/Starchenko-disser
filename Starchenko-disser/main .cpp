@@ -37,7 +37,7 @@ int accum_bit_vector(const uint8_t* V, unsigned N)
 	int accum = 0;
 	unsigned i;
 	for (i = 0; i < N; i = i + 1)
-		result = result + V[i];
+		accum = accum + V[i];
 	return accum;
 }
 
@@ -73,6 +73,7 @@ int main(int argc, char** argv)
 	uint64_t input = 0x6DC6;
 	cout << "Parity bit of " << hex << input << " is " << parity_bit(input) << "\n";
 	cout << "Parity bit of " << hex << input << " is " << parity_bit_vector((uint8_t*) &input, sizeof(input)) << "\n";
+	cout << "Accum bit of " << hex << input << " is " << accum_bit_vector((uint8_t*) &input, sizeof(input)) << "\n";
 	cout << "CRC of " << hex << input << " with polynomial " << hex << poly << " is " << crc_1(input, poly) << "\n";
 
 	result_and_time res;
