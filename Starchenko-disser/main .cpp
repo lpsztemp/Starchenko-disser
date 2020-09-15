@@ -30,6 +30,16 @@ int parity_bit_vector(const uint8_t* V, unsigned N)
 	return Re;
 }
 
+int accum_bit_vector(const uint8_t* V, unsigned N)
+{
+	uint8_t result = 0;
+	int accum = 0;
+	unsigned i;
+	for (i = 0; i < N; i = i + 1)
+		result = result + V[i];
+	return accum;
+}
+
 //bitsize(input) < bitsize(poly) - 1
 uint64_t crc_1(uint64_t input, uint64_t poly)
 {
