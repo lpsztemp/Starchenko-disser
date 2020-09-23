@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <iomanip>
 #include <chrono>
+#include <immintrin.h>
+
 using namespace std;
 
 /*
@@ -71,6 +73,10 @@ result_and_time get_result_and_time(const uint8_t* V, unsigned N, int (*compute)
 	return value;
 }
 
+unsigned MIN_VECTOR_SIZE = 8;
+unsigned MAX_VECTOR_SIZE = 1 << 25;
+unsigned STEP_VECTOR_SIZE = (1 << 20);
+
 int main(int argc, char** argv)
 {
 	uint64_t poly = 0x6DC6;
@@ -80,11 +86,35 @@ int main(int argc, char** argv)
 	cout << "Accum bit of " << hex << input << " is " << accum_bit_vector((uint8_t*) &input, sizeof(input)) << "\n";
 	cout << "CRC of " << hex << input << " with polynomial " << hex << poly << " is " << crc_1(input, poly) << "\n";
 
+	uint8_t* V = (uint8_t*) malloc(MAX_VECTOR_SIZE); //allocate
+	for (unsigned i = 0; i < MAX_VECTOR_SIZE; i = i + 1) //initialize
+		V[i] = i * 3;
+
+	std::cout << std::dec;
+
+	cout << "Size\tTime\tResult\n";
+	for (unsigned i = MIN_VECTOR_SIZE; i < MAX_VECTOR_SIZE; i = i + STEP_VECTOR_SIZE)
+	{
+		result_and_time res = get_result_and_time(V, i, parity_bit_vector);
+		cout << i << '\t' << res.time.count() << '\t' << res.result << '\n';
+	}
+
+	cout << "Size\tTime\tResult\n";
+	for (unsigned i = MIN_VECTOR_SIZE; i < MAX_VECTOR_SIZE; i = i + STEP_VECTOR_SIZE)
+	{
+		result_and_time res = get_result_and_time(V, i, accum_bit_vector);
+		cout << i << '\t' << res.time.count() << '\t' << res.result << '\n';
+	}
+
+
+	
 	result_and_time res;
 	res = get_result_and_time((uint8_t*) &input, sizeof(input), parity_bit_vector);
 	cout << "Result: " << res.result << ", time: " << res.time.count() << "ms.\n";
 	res = get_result_and_time((uint8_t*) &input, sizeof(input), accum_bit_vector);
 	cout << "Result: " << res.result << ", time: " << res.time.count() << "ms.\n";
+	
+	free(V);
 
 	return 0;
 }
