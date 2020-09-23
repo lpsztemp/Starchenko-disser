@@ -43,13 +43,46 @@ int accum_bit_vector(const uint8_t* V, unsigned N)
 	return accum;
 }
 
+unsigned bitsize(const unsigned char* val, unsigned byte_size)
+{
+	unsigned i = byte_size;
+	while (i-- > 0)
+	{
+		if (val[i] != 0)
+		{
+			unsigned j = 8;
+			while (j-- > 0)
+			{
+				if (val[i] & (1 << j) != 0)
+					return j + 1 + i * 8;
+			}
+		}
+	}
+	return 0;
+}
+
+unsigned bitsize(uint64_t val)
+{
+	return bitsize((const unsigned char*) &val, 8);
+}
+
 //bitsize(input) < bitsize(poly) - 1
 uint64_t crc_1(uint64_t input, uint64_t poly)
 {
+	unsigned deg = bitsize(poly) - 1;
+	unsigned input_deg = bitsize(input);
+	while (input_deg-- >= deg)
+	{
+		if (((uint64_t(1) << input_deg) & input) != 0)
+			input = input ^ (poly << (input_deg - deg));
+	}
+	input = input << deg;
+
 	uint64_t result = 0;
-	int crc = input;
-	unsigned i;
-	for (i = crc; poly < i; crc = i ^ crc)
+
+
+	unsigned i = 63;
+	for (i = 63; poly < i; crc = i ^ crc)
 		crc = i;
 	// <<, >>, ^, &, |
 	return crc;
