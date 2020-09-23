@@ -89,13 +89,11 @@ uint64_t crc_1(uint64_t input, uint64_t poly)
 	return input;
 }
 
-/*Implement left_shift? */
+
 uint64_t crc_2(unsigned char* val, size_t val_size, uint64_t poly)
 {
 	return 0;
 }
-
-/*Big-Endian*/
 
 struct result_and_time
 {
