@@ -12,6 +12,9 @@ https://en.cppreference.com/w/c/language/for
 https://en.cppreference.com/w/c/language/if
 */
 
+//https://en.cppreference.com/w/cpp/language/integer_literal
+//https://en.cppreference.com/w/cpp/language/types
+
 uint64_t parity_bit(uint64_t input)
 {
 	uint64_t result = 0;
@@ -53,7 +56,7 @@ unsigned bitsize(const unsigned char* val, unsigned byte_size)
 			unsigned j = 8;
 			while (j-- > 0)
 			{
-				if (val[i] & (1 << j) != 0)
+				if ((val[i] & (1 << j)) != 0)
 					return j + 1 + i * 8;
 			}
 		}
@@ -73,19 +76,17 @@ uint64_t crc_1(uint64_t input, uint64_t poly)
 	unsigned input_deg = bitsize(input);
 	while (input_deg-- >= deg)
 	{
-		if (((uint64_t(1) << input_deg) & input) != 0)
+		if ((((uint64_t) 1 << input_deg) & input) != 0)
 			input = input ^ (poly << (input_deg - deg));
 	}
 	input = input << deg;
-
-	uint64_t result = 0;
-
-
-	unsigned i = 63;
-	for (i = 63; poly < i; crc = i ^ crc)
-		crc = i;
-	// <<, >>, ^, &, |
-	return crc;
+	input_deg = input_deg + deg + 2;
+	while (input_deg-- >= deg + 1)
+	{
+		if (((1ull << input_deg) & input) != 0) //1ull equivalent uint64_t(1)
+			input = input ^ (poly << (input_deg - deg));
+	}
+	return input;
 }
 
 struct result_and_time
@@ -112,12 +113,14 @@ unsigned STEP_VECTOR_SIZE = (1 << 20);
 
 int main(int argc, char** argv)
 {
-	uint64_t poly = 0x6DC6;
-	uint64_t input = 0x104C11DB7;
+	uint64_t poly = 0x104C11DB7;
+	uint64_t input = 0x1234567812345678ull;
 	cout << "Parity bit of " << hex << input << " is " << parity_bit(input) << "\n";
 	cout << "Parity bit of " << hex << input << " is " << parity_bit_vector((uint8_t*) &input, sizeof(input)) << "\n";
 	cout << "Accum bit of " << hex << input << " is " << accum_bit_vector((uint8_t*) &input, sizeof(input)) << "\n";
 	cout << "CRC of " << hex << input << " with polynomial " << hex << poly << " is " << crc_1(input, poly) << "\n";
+	uint64_t test_poly = 0xB, test_input = 0B11010011101100;
+	cout << "CRC of " << hex << test_input << " with polynomial " << hex << test_poly << " is " << crc_1(test_input, test_poly) << "\n";
 
 	uint8_t* V = (uint8_t*) malloc(MAX_VECTOR_SIZE); //allocate
 	for (unsigned i = 0; i < MAX_VECTOR_SIZE; i = i + 1) //initialize
